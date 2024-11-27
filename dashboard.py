@@ -46,7 +46,7 @@ st.title("Visualisasi Data Pengguna")
 st.subheader("Pie Chart: Distribusi Casual vs Registered User")
 st.pyplot(pie_distribution())
 
-# Streamlit App
+
 st.title("Scatter Plot Berdampingan")
 st.pyplot(scatter_side_by_side())
 
