@@ -2,52 +2,64 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
-from babel.numbers import format_currency
-sns.set(style='dark')
 
 bike_df = pd.read_csv("bike_data.csv")
-
-
-# Fungsi Membuat Pie Chart untuk Distribusi User
-def pie_distribution():
-    total_casual = bike_df['casual'].sum()
-    total_registered = bike_df['registered'].sum()
-    labels = ['Casual User', 'Registered User']
-    values = [total_casual, total_registered]
-
-    fig, ax = plt.subplots()
-    ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90, colors=['skyblue', 'orange'])
-    ax.set_title('Distribusi Casual vs Registered User')
+# Fungsi untuk membuat scatter plot
+def plot_scatter(x, y1, y2, title1, title2, xlabel, ylabel1, ylabel2):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
+    ax1.scatter(x, y1, color='blue', alpha=0.7)
+    ax1.set_title(title1)
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel1)
+    ax2.scatter(x, y2, color='orange', alpha=0.7)
+    ax2.set_title(title2)
+    ax2.set_xlabel(xlabel)
+    ax2.set_ylabel(ylabel2)
     return fig
 
-def scatter_side_by_side():
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 8))  # 1 baris, 2 kolom
+st.title("Rental Bike Dashboard")
 
-    # Scatter plot: Temperature vs Casual User
-    axes[0].scatter(bike_df['temp'], bike_df['casual'], color='blue', label='Casual User')
-    axes[0].set_title('Temperature vs Casual User')
-    axes[0].set_xlabel('Temperature')
-    axes[0].set_ylabel('Casual User')
-    axes[0].legend()
+# Pie Chart langsung ditampilkan tanpa tombol
+total_registered_users = bike_df['registered'].sum()
+total_casual_users = bike_df['casual'].sum()
+categories = ['Registered', 'Casual']
+values = [total_registered_users, total_casual_users]
 
-    # Scatter plot: Temperature vs Registered User
-    axes[1].scatter(bike_df['temp'], bike_df['registered'], color='green', label='Registered User')
-    axes[1].set_title('Temperature vs Registered User')
-    axes[1].set_xlabel('Temperature')
-    axes[1].set_ylabel('Registered User')
-    axes[1].legend()
+fig, ax = plt.subplots()
+ax.pie(
+    values,
+    labels=categories,
+    autopct='%1.1f%%',
+    startangle=90,
+    colors=['skyblue', 'orange']
+)
+ax.set_title("User Distribution")
+st.pyplot(fig)
 
-    plt.tight_layout()  # Menyesuaikan tata letak
-    return fig
+# Scatter Plot: Temperature vs Users
+if st.button("More Temperature More Users"):
+    fig = plot_scatter(
+        x=bike_df["temp"],
+        y1=bike_df["casual"],
+        y2=bike_df["registered"],
+        title1="Casual Users vs Temperature",
+        title2="Registered Users vs Temperature",
+        xlabel="Temperature",
+        ylabel1="Casual Users",
+        ylabel2="Registered Users"
+    )
+    st.pyplot(fig)
 
-
-# streamlit
-st.title("Visualisasi Data Pengguna")
-st.subheader("Pie Chart: Distribusi Casual vs Registered User")
-st.pyplot(pie_distribution())
-
-
-st.title("Scatter Plot Berdampingan")
-st.pyplot(scatter_side_by_side())
-
-
+# Scatter Plot: Humidity vs Users
+if st.button("More Humidity Less Users"):
+    fig = plot_scatter(
+        x=bike_df["hum"],
+        y1=bike_df["casual"],
+        y2=bike_df["registered"],
+        title1="Casual Users vs Humidity",
+        title2="Registered Users vs Humidity",
+        xlabel="Humidity",
+        ylabel1="Casual Users",
+        ylabel2="Registered Users"
+    )
+    st.pyplot(fig)
